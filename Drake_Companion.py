@@ -4,6 +4,7 @@ from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.properties import StringProperty
 from kivy.uix.screenmanager import Screen, SlideTransition
 import os
+from kivy.uix.checkbox import CheckBox
 
 class MainWindow(Screen):
     def do_login(self, loginText, passwordText):
@@ -65,8 +66,12 @@ class SecondWindow(Screen):
         '''
         events.text = 'test'
         events2.text = 'test2'
-            
-            
+
+    def reset_checkbox(self):
+        for child in reversed(self.ids.two.children):
+            if isinstance(child, CheckBox):
+                child.active = False    
+                
         
     
 class CreateWindow(Screen):
