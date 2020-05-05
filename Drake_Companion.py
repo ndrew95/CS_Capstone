@@ -5,6 +5,17 @@ from kivy.properties import StringProperty
 from kivy.uix.screenmanager import Screen, SlideTransition
 import os
 from kivy.uix.checkbox import CheckBox
+from kivy.utils import platform
+if platform == "ios":
+    from os.path import join, dirname
+    import kivy.garden
+    kivy.garden.garden_app_dir = join(dirname(__file__), "libs", "garden")
+from kivy.garden.mapview import MapView
+from kivy.garden.mapview import MapMarkerPopup
+from kivy.uix.bubble import Bubble
+from kivy.garden.mapview import MapView, MapMarker
+
+#from kivy.garden.mapview.MapMarkerPopup import MapMarkerPopup 
 
 class MainWindow(Screen):
     def do_login(self, loginText, passwordText):
@@ -35,7 +46,14 @@ class SecondWindow(Screen):
         self.event_update = str('new event')
     
     #self.event_update = str('new event')
-
+    def set_marker_position(self):
+       # marker = MapView.mar
+        map = MapView(zoom=17, lon=-93.655, lat=41.605)
+        mapview = MapView
+        m1 = MapMarker(lon=-93.655, lat=41.605)
+        map.add_marker(m1)
+        
+        #mapview.add_marker(MapMarkerPopup(lat=41.605,lon=-93.655, placeholder= Bubble()))
     def update_events(self):
         
         '''
@@ -73,13 +91,25 @@ class SecondWindow(Screen):
                 child.active = False    
                 
         
-    
+class DefaultWindow(Screen):
+    pass
 class CreateWindow(Screen):
+    pass
+class MapWindow(Screen):
     pass
 
 class WindowManager(ScreenManager):
     pass
 
+class PopUpWindow(Screen):
+    def set_marker_position(self):
+        
+        x, y = mapview.get_window_xy_from(marker.lat, marker.lon, mapview.zoom)
+        marker.x = int(x - marker.width * marker.anchor_x)
+        marker.y = int(y - marker.height * marker.anchor_y)
+        if isinstance(marker, MapMarkerPopup):
+            marker.placeholder.x = marker.x - marker.width / 2
+            marker.placeholder.y = marker.y + marker.height
 
 
 
