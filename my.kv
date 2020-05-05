@@ -1,4 +1,3 @@
-
 WindowManager:
     MainWindow:
     CreateWindow:
@@ -241,3 +240,191 @@ WindowManager:
         popup_size: 400,400
         
             
+=======
+WindowManager:
+    MainWindow:
+    CreateWindow:
+    SecondWindow:
+
+<MainWindow>:
+    name: "main"
+
+    BoxLayout
+        id: login_layout
+        orientation: 'vertical'
+        padding: [10,50,10,50]
+        spacing: 50
+
+        Label:
+            text: 'Welcome'
+            font_size: 32
+
+        BoxLayout:
+            orientation: 'vertical'
+
+            Label:
+                text: 'Login'
+                font_size: 35
+                halign: 'left'
+               # text_size: root.width-20, 20
+
+            TextInput:
+                id: login
+                multiline:False
+                font_size: 28
+
+        BoxLayout:
+            orientation: 'vertical'
+            Label:
+                text: 'Password'
+                halign: 'left'
+                font_size: 35
+                #text_size: root.width-20, 20
+
+            TextInput:
+                id: password
+                multiline:False
+                password:True
+                font_size: 28
+
+        Button:
+            text: 'Connect'
+            
+
+            on_press: root.do_login(login.text, password.text)
+        BoxLayout:
+            orientation: 'vertical'
+            Label:
+                
+                halign: 'left'
+                font_size: 18
+                text_size: root.width-40, 10
+            Button:
+                size_hint: 0.15, 0.15
+                pos: root.width-self.width, root.height / 2 - self.height / 2
+                text: "Sign Up"
+                on_release:
+                    app.root.current = 'create'
+                    root.manager.transition.direction = "left"
+    
+
+<CreateWindow>:
+    name: "create"
+
+    BoxLayout
+        id: create_acct
+        orientation: 'vertical'
+        padding: [10,50,10,50]
+        spacing: 50
+
+        Label:
+            text: 'Enter Details'
+            font_size: 32
+
+        BoxLayout:
+            orientation: 'vertical'
+
+            Label:
+                text: 'Login'
+                font_size: 18
+                halign: 'left'
+                text_size: root.width-20, 20
+
+            TextInput:
+                id: login
+                multiline:False
+                font_size: 28
+
+        BoxLayout:
+            orientation: 'vertical'
+            Label:
+                text: 'Password'
+                halign: 'left'
+                font_size: 18
+                text_size: root.width-20, 20
+
+            TextInput:
+                id: password
+                multiline:False
+                password:True
+                font_size: 28
+
+        Button:
+            text: 'Connect'
+            font_size: 24
+
+            on_press: app.root.current = 'main'
+
+
+<SecondWindow>:
+    name: "second"
+
+    TabbedPanel:
+        id: tp
+        do_default_tab: True
+        default_tab: home_tab
+        TabbedPanelItem:
+            text: 'Results'
+            
+
+                
+                
+        TabbedPanelItem:
+            text: 'D'
+            id: home_tab
+            
+            BoxLayout:
+                padding: 50, 50, 50, 50
+                orientation: 'horizontal'
+                
+                        
+                BoxLayout:
+                    spacing: 50
+                    orientation: 'vertical'
+                    CheckBox: 
+                        text: 'CheckBox'
+                    CheckBox: 
+                        text: 'CheckBox'
+                    CheckBox: 
+                        text: 'CheckBox'
+                BoxLayout:
+                    spacing: 50
+                    orientation: 'vertical'
+                    id: events
+                    Label:
+                        text: root.event_update
+                        id: event1
+                        text_size: self.size
+                        halign: 'left'
+                    Label:
+                        text: 'Event'
+                        id: event2
+                        text_size: self.size
+                        halign: 'left'
+                    Label:
+                        text: 'Event'
+                        text_size: self.size
+                        halign: 'left'
+                BoxLayout:
+                    spacing: 0
+                    size_hint: .5, .5
+                    orientation: 'vertical'
+                    
+                    Button:
+                        text: 'Refresh'
+                        on_press: root.update_events()
+                        pos_hint: {'right': 1, 'bottom': 1} 
+                    
+        TabbedPanelItem:
+            text: 'tab3'
+            RstDocument:
+                text:
+                    '\\n'.join(("Hello world", "-----------",
+                    "You are in the third tab."))
+
+
+        TabbedPanelItem:
+            text: 'Map'
+            Image:
+                source: 'DrakeMap.jpg'
+                size: self.texture_size
