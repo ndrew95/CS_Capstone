@@ -14,6 +14,7 @@ from kivy.garden.mapview import MapView
 from kivy.garden.mapview import MapMarkerPopup
 from kivy.uix.bubble import Bubble
 from kivy.garden.mapview import MapView, MapMarker
+
 from datetime import datetime
 from datetime import timedelta
 from datetime import date
@@ -33,6 +34,7 @@ password="tf7A8sjX#!"
 
 conn = pymysql.connect(db=dbname,host=host, password=password, port=port, user=user)
 cursor = conn.cursor()
+
 
 #from kivy.garden.mapview.MapMarkerPopup import MapMarkerPopup 
 
@@ -81,6 +83,7 @@ class SecondWindow(Screen):
         m1 = MapMarker(lon=-93.655, lat=41.605)
         map.add_marker(m1)
         
+
     def get_next_event(self):
         cursor.execute('SELECT Description, time from EVENTS order by time')
         next_event = cursor.fetchall()
@@ -215,6 +218,8 @@ class SecondWindow(Screen):
            # print(elapsedTime)
             #print(i[1])
     def update_events(self,x):
+
+
         
         '''
         here we can have the number of events we want to display and dynamically change the events name
