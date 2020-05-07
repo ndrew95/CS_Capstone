@@ -1,3 +1,4 @@
+#:import Clock kivy.clock.Clock
 WindowManager:
     MainWindow:
     CreateWindow:
@@ -51,6 +52,7 @@ WindowManager:
             
 
             on_press: root.do_login(login.text, password.text)
+
         BoxLayout:
             orientation: 'vertical'
             Label:
@@ -85,9 +87,9 @@ WindowManager:
 
             Label:
                 text: 'Login'
-                font_size: 18
+                font_size: 35
                 halign: 'left'
-                text_size: root.width-20, 20
+                #text_size: root.width-20, 20
 
             TextInput:
                 id: login
@@ -99,8 +101,8 @@ WindowManager:
             Label:
                 text: 'Password'
                 halign: 'left'
-                font_size: 18
-                text_size: root.width-20, 20
+                font_size: 35
+                #text_size: root.width-20, 20
 
             TextInput:
                 id: password
@@ -109,15 +111,15 @@ WindowManager:
                 font_size: 28
 
         Button:
-            text: 'Connect'
-            font_size: 24
+            text: 'Back to Login'
+            #font_size: 24
 
             on_press: app.root.current = 'main'
 
 
 <SecondWindow>:
     name: "second"
-
+    on_enter: Clock.schedule_once(root.update_events, .5) 
     TabbedPanel:
         id: tp
         #size_hint: 1, 1
@@ -161,19 +163,20 @@ WindowManager:
                     orientation: 'vertical'
                     id: events
                     Label:
-                        text: root.event_update
+                        text: "100 Meter Dash - Womens"
                         id: event1
                         #text_size: self.size
                         halign: 'left'
                         valign: 'center'
                     Label:
-                        text: 'Event'
+                        text: "400 Meter Relay - Womens"
                         id: event2
                         valign: 'center'
                         #text_size: self.size
                         halign: 'left'
                     Label:
-                        text: 'Event'
+                        text: "Shot-put - Mens"
+                        id: event3
                        # text_size: self.size
                         halign: 'left'
                         valign: 'center'
@@ -196,7 +199,7 @@ WindowManager:
                         text: "refresh"
                         halign: 'right'
                         valign: 'bottom'
-                        on_press: root.update_events()
+                        on_press: root.update_events(.5)
                 
                     
                     
@@ -205,12 +208,15 @@ WindowManager:
                         #size_hint: (None, None)
                         size: (dp(56), dp(56))
                         pos_hint:{'left': 1}
-                        text: "Submit"
+                        text: "Submit Interest"
                         halign: 'left'
                         valign: 'bottom'
                         on_release: root.reset_checkbox()
                     #pos_hint: {'right': 1, 'bottom': 1} 
         TabbedPanelItem:
+
+            text: "Map"
+
             on_press: app.root.current = 'map'
         
 <MapWindow>:
@@ -238,5 +244,4 @@ WindowManager:
         lat: 41.605
         lon: -93.655
         popup_size: 400,400
-        
-  
+
