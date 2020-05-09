@@ -29,6 +29,10 @@ from kivy.clock import Clock
 #import Label
 from kivy.uix.popup import Popup
 from kivy.uix.gridlayout import GridLayout
+import hashlib
+import os
+import hashlib, binascii, os
+import base64
 
 host='cap-comp.cpwue0appyn7.us-west-2.rds.amazonaws.com'
 port=3306
@@ -48,13 +52,29 @@ class MainWindow(Screen):
     
     def do_login(self, loginText, passwordText):
         app = App.get_running_app()
+        test = MainWindow()
+        checkUser = False
         cursor.execute('SELECT User, Pass from LOGIN321')
         logins = cursor.fetchall()
+        salt = os.urandom(32)
         app.username = loginText
         app.password = passwordText
+        print(logins[0][1])
+        for i in logins:
+            if(test.verify_password(i[1], app.password)==True and i[0]==app.username):
+                checkUser = True
+                break
+            print(i[1])
+
+            print('here' + str(test.verify_password(logins[0][1], app.password)))
         global login123
         login123 =loginText
-        
+       # new_key = hashlib.pbkdf2_hmac(
+         #   'sha256',
+         #   app.password.encode('utf-8'), # Convert the password to bytes
+         #   salt, 
+         #   100000
+         #   )
         #login123 = ''
         layout = GridLayout(cols = 1)
         #popupLabel = Label(text = "Incorrect Login Information") 
@@ -73,7 +93,7 @@ class MainWindow(Screen):
         # Attach close button press with popup.dismiss action 
         #closeButton.bind(on_press = popup.dismiss)
         #print(logins[0][1])
-        checkUser = False
+        
         count = 0
         for i in logins:
             print(i[1])
@@ -101,7 +121,17 @@ class MainWindow(Screen):
         self.ids['login'].text = ""
         self.ids['password'].text = ""
 
-
+    def verify_password(self, stored_password, provided_password):
+        """Verify a stored password against one provided by user"""
+        salt = stored_password[:64]
+        stored_password = stored_password[64:]
+        pwdhash = hashlib.pbkdf2_hmac('sha512', 
+                                      provided_password.encode('utf-8'), 
+                                      salt.encode('ascii'), 
+                                      100000,
+                                      dklen=45)
+        pwdhash = binascii.hexlify(pwdhash).decode('ascii')
+        return pwdhash == stored_password
 class SecondWindow(Screen):
     
     tab_pos = 'top_mid'
@@ -471,12 +501,23 @@ class DefaultWindow(Screen):
     pass
 class CreateWindow(Screen):
     def Create_Account(self,loginText, passwordText):
+        test = CreateWindow()
         app = App.get_running_app()
         app.username = loginText
         app.password = passwordText
-        sql = """INSERT INTO LOGIN321 (User, Pass) VALUES('%s','%s')"""%(app.username, app.password)
+        salt = os.urandom(32)
+        password = test.hash_password(app.password)
+        sql = """INSERT INTO LOGIN321 (User, Pass) VALUES('%s','%s')"""%(app.username, password)
         cursor.execute(sql)
         conn.commit()
+
+    def hash_password(self, password):
+        """Hash a password for storing."""
+        salt = hashlib.sha256(os.urandom(60)).hexdigest().encode('ascii')
+        pwdhash = hashlib.pbkdf2_hmac('sha512', password.encode('utf-8'), 
+                                    salt, 100000, dklen=45)
+        pwdhash = binascii.hexlify(pwdhash)
+        return (salt + pwdhash).decode('ascii')
         #cursor.execute('INSERT INTO LOGIN321 (User, Pass) VALUES('%s')'
 class MapWindow(Screen):
     def set_marker_position(self,x):
