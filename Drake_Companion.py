@@ -280,7 +280,7 @@ class SecondWindow(Screen):
         cursor.execute(sql)
         interest = cursor.fetchall()
         dateNow = datetime.now().time()
-        print(dateNow)
+        
 
         colonSplit=str(dateNow).split(":")
         timeNow =(int(f"{colonSplit[0]}{colonSplit[1]}"))
@@ -294,7 +294,7 @@ class SecondWindow(Screen):
         colonSplit=str(interest[2][1]).split(":")
         interest3Time =(int(f"{colonSplit[0]}{colonSplit[1]}"))
 
-        print(interest3Time)
+        
         interest1 = self.ids.interest1
         interest2 = self.ids.interest2
         interest3 = self.ids.interest3
