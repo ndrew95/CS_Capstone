@@ -275,31 +275,52 @@ class SecondWindow(Screen):
                 child.active = False
 
     def update_interest(self,x): 
+        secondWindow = SecondWindow()
         sql = "SELECT Description, Time, COUNT(*) occurences FROM INTEREST GROUP BY Description HAVING COUNT(*)>1 ORDER BY occurences DESC "
         cursor.execute(sql)
         interest = cursor.fetchall()
+        dateNow = datetime.now().time()
+        print(dateNow)
 
+        colonSplit=str(dateNow).split(":")
+        timeNow =(int(f"{colonSplit[0]}{colonSplit[1]}"))
+
+        colonSplit=str(interest[0][1]).split(":")
+        interest1Time =(int(f"{colonSplit[0]}{colonSplit[1]}"))
+
+        colonSplit=str(interest[1][1]).split(":")
+        interest2Time =(int(f"{colonSplit[0]}{colonSplit[1]}"))
+
+        colonSplit=str(interest[2][1]).split(":")
+        interest3Time =(int(f"{colonSplit[0]}{colonSplit[1]}"))
+
+        print(interest3Time)
         interest1 = self.ids.interest1
         interest2 = self.ids.interest2
         interest3 = self.ids.interest3
+        time1=False
+        time2=False
+        time3=False
 
-        try:
-            interest1.text = str(interest[0][0]) + " taking place at " + str(interest[0][1])
-        except:
-            x = 1
+        for i in interest:
+            colonSplit=str(i[1]).split(":")
+            interestTime =(int(f"{colonSplit[0]}{colonSplit[1]}"))
 
-        try:
-            interest2.text = str(interest[1][0]) + " taking place at " + str(interest[1][1])
-        except:
-            x=1
+            if(timeNow<=interestTime and time1==False):
+                interest1.text = str(i[0]) + " taking place at " + str(i[1])
+                time1=True
+            elif(timeNow<=interestTime and time2==False):
+                interest2.text = str(i[0]) + " taking place at " + str(i[1])
+                time2=True
+            elif(timeNow<=interestTime and time3==False):
+                interest3.text = str(i[0]) + " taking place at " + str(i[1])
+                time3=True
 
-        try:
-            interest3.text = str(interest[2][0]) + " taking place at " + str(interest[2][1])
-        except:
-            x=1
-        
+
+
 class DefaultWindow(Screen):
     pass
+    
 class CreateWindow(Screen):
     def Create_Account(self,loginText, passwordText):
         createWindow = CreateWindow()
