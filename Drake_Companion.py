@@ -86,8 +86,6 @@ class MainWindow(Screen):
 
         popup = Popup(title ='Incorrect Login Information', 
                       content = layout,
-                      pos_hint={'x': 600.0 / Window.width, 
-                            'y':600.0 /  Window.height},
                       size_hint=(None, None), size=(500,200))   
         #popup.open()    
   
@@ -399,8 +397,6 @@ class SecondWindow(Screen):
 
         popup = Popup(title ='Already Submitted Interest for this Event', 
                       content = layout,
-                      pos_hint={'x': 600.0 / Window.width, 
-                            'y':600.0 /  Window.height},
                       size_hint=(None, None), size=(500,200)) 
         interest1 = False
         interest2 = False
@@ -512,8 +508,6 @@ class CreateWindow(Screen):
 
         popup = Popup(title ='Fields cannot be Blank', 
                       content = layout,
-                      pos_hint={'x': 600.0 / Window.width, 
-                            'y':600.0 /  Window.height},
                       size_hint=(None, None), size=(500,200))   
         test = CreateWindow()
         app = App.get_running_app()
