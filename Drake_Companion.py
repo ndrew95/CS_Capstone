@@ -59,14 +59,15 @@ class MainWindow(Screen):
         salt = os.urandom(32)
         app.username = loginText
         app.password = passwordText
-        print(logins[0][1])
+        #print(logins[0][1])
+
         for i in logins:
             if(test.verify_password(i[1], app.password)==True and i[0]==app.username):
                 checkUser = True
                 break
-            print(i[1])
-
-            print('here' + str(test.verify_password(logins[0][1], app.password)))
+            #print(i[1])
+        print(checkUser)
+            #print('here' + str(test.verify_password(i[1], app.password)))
         global login123
         login123 =loginText
        # new_key = hashlib.pbkdf2_hmac(
@@ -95,12 +96,13 @@ class MainWindow(Screen):
         #print(logins[0][1])
         
         count = 0
+        '''
         for i in logins:
             print(i[1])
             if i[0] == app.username and i[1] == app.password:
                 checkUser = True
                 break
-        
+        '''
 
        # print(app.username)
         if checkUser == True:
@@ -501,15 +503,33 @@ class DefaultWindow(Screen):
     pass
 class CreateWindow(Screen):
     def Create_Account(self,loginText, passwordText):
+        layout = GridLayout(cols = 1)
+        #popupLabel = Label(text = "Incorrect Login Information") 
+        closeButton = Button(text = "Close") 
+  
+        #layout.add_widget(popupLabel) 
+        layout.add_widget(closeButton)
+
+        popup = Popup(title ='Fields cannot be Blank', 
+                      content = layout,
+                      pos_hint={'x': 600.0 / Window.width, 
+                            'y':600.0 /  Window.height},
+                      size_hint=(None, None), size=(500,200))   
         test = CreateWindow()
         app = App.get_running_app()
         app.username = loginText
         app.password = passwordText
-        salt = os.urandom(32)
-        password = test.hash_password(app.password)
-        sql = """INSERT INTO LOGIN321 (User, Pass) VALUES('%s','%s')"""%(app.username, password)
-        cursor.execute(sql)
-        conn.commit()
+        if app.username!='' and app.password!='':
+            salt = os.urandom(32)
+            password = test.hash_password(app.password)
+            sql = """INSERT INTO LOGIN321 (User, Pass) VALUES('%s','%s')"""%(app.username, password)
+            cursor.execute(sql)
+            conn.commit()
+        else:
+            popup.open() 
+            closeButton.bind(on_press = popup.dismiss)
+
+
 
     def hash_password(self, password):
         """Hash a password for storing."""
