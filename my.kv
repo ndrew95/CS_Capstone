@@ -4,7 +4,6 @@ WindowManager:
     CreateWindow:
     SecondWindow:
     MapWindow:
-    PopUpWindow:
 
 <MainWindow>:
     name: "main"
@@ -57,7 +56,7 @@ WindowManager:
         Button:
             text: 'Connect'
             
-            on_release: root.login_user()
+           # on_release: root.login_user()
             on_press: root.do_login(login.text, password.text)
 
         BoxLayout:
@@ -211,33 +210,15 @@ WindowManager:
                         text: "Interest"
                         font_size: 60
                     CheckBox:
-                        canvas.before:
-                            Color:
-                                rgba: .5, .5, .5, 1
-                            Rectangle:
-                               # width: 1
-                                pos: (150,670)
-                                size: (100,100)
+                        
                         id: check1
                         text: 'CheckBox'
                     CheckBox: 
-                        canvas.before:
-                            Color:
-                                rgba: .5, .5, .5, 1
-                            Rectangle:
-                               # width: 1
-                                pos: (150,342)
-                                size: (100,100)
+                        
                         id: check2
                         text: 'CheckBox'
                     CheckBox: 
-                        canvas.before:
-                            Color:
-                                rgba: .5, .5, .5, 1
-                            Rectangle:
-                               # width: 1
-                                pos: (150,14)
-                                size: (100,100)
+                        
                         id: check3
                         text: 'CheckBox'
                 BoxLayout:
@@ -377,11 +358,3 @@ WindowManager:
             lat: 41.605
             lon: -93.655
             zoom: 17
-
-<PopUpWindow>:
-    name: 'popup'
-    MapMarkerPopup:
-        id: marker
-        lat: 41.605
-        lon: -93.655
-        popup_size: 400,400
