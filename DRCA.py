@@ -74,10 +74,6 @@ class MainWindow(Screen):
             closeButton.bind(on_press = popup.dismiss)
 
 
-    def resetForm(self):
-        self.ids['login'].text = ""
-        self.ids['password'].text = ""
-
     def verify_password(self, stored_password, provided_password):
         """Verify a stored password against one provided by user"""
         salt = stored_password[:64]
