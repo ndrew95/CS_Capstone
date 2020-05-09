@@ -8,7 +8,14 @@ WindowManager:
 
 <MainWindow>:
     name: "main"
+    canvas.before:
+        #Color: 
+           # rgba: 0, 0, 1, 1
+        Rectangle:
+            pos: (self.pos)
+            size: self.size
 
+            source: 'drake.jpg'
     BoxLayout
         id: login_layout
         orientation: 'vertical'
@@ -16,8 +23,8 @@ WindowManager:
         spacing: 50
 
         Label:
-            text: 'Welcome'
-            font_size: 32
+            #text: 'Welcome'
+            #font_size: 32
 
         BoxLayout:
             orientation: 'vertical'
@@ -71,7 +78,14 @@ WindowManager:
 
 <CreateWindow>:
     name: "create"
+    canvas.before:
+        #Color: 
+           # rgba: 0, 0, 1, 1
+        Rectangle:
+            pos: (self.pos)
+            size: self.size
 
+            source: 'drake.jpg'
     BoxLayout
         id: create_acct
         orientation: 'vertical'
@@ -119,12 +133,14 @@ WindowManager:
 
 <SecondWindow>:
     name: "second"
+
     padding: [0,0,0,0]
     spacing: 0
     on_enter: Clock.schedule_once(root.update_events, .5) 
     on_enter: Clock.schedule_once(root.update_results, .5) 
     on_enter: Clock.schedule_once(root.update_interest, .5) 
     TabbedPanel:
+        
         id: tp
         #spacing: 0
         #size_hint: 1, 1
@@ -133,13 +149,23 @@ WindowManager:
         default_tab: home_tab
         
         TabbedPanelItem:
+            
         #spacing: 0
             text: 'Results'
             BoxLayout:
+                canvas.before:
+        #Color: 
+           # rgba: 0, 0, 1, 1
+                    Rectangle:
+                        pos: (self.pos)
+                        size: self.size
+
+                        source: 'drake.jpg'
 
                 orientation: 'vertical'
                 Label:
                     text: "Recent Results"
+                    font_size: 60
                 Label:
                     text: ''
                     id: result1
@@ -154,10 +180,18 @@ WindowManager:
                 
                 
         TabbedPanelItem:
-            text: 'D'
+            text: 'Events'
             id: home_tab
             
             BoxLayout:
+                canvas.before:
+        #Color: 
+           # rgba: 0, 0, 1, 1
+                    Rectangle:
+                        pos: (self.pos)
+                        size: self.size
+
+                        source: 'drake.jpg'
                 id: "1"
                 #padding: 0, 200, 200, 200
                # spacing: 1000
@@ -175,6 +209,7 @@ WindowManager:
                     #valign: 'left'
                     Label:
                         text: "Interest"
+                        font_size: 60
                     CheckBox:
                         canvas.before:
                             Color:
@@ -216,6 +251,7 @@ WindowManager:
                     Label:
                         #spacing: 200
                         text: "Event"
+                        font_size: 60
                     Label:
                         #spacing: 200
                         text: ""
@@ -241,6 +277,7 @@ WindowManager:
                     spacing: 200
                     Label:
                         text: "Time"
+                        font_size: 60
                     Label:
                         id: time1
                         text: ""
@@ -282,7 +319,14 @@ WindowManager:
             text: "Interest"
             BoxLayout:
                 id: "3"
-                
+                canvas.before:
+        #Color: 
+           # rgba: 0, 0, 1, 1
+                    Rectangle:
+                        pos: (self.pos)
+                        size: self.size
+
+                        source: 'drake.jpg'
                 #halign: 'center'
                 #valign:
                 orientation: 'vertical'
@@ -291,6 +335,7 @@ WindowManager:
                 Label:
                     #spacing: 200
                     text: "Events With High Interest"
+                    font_size: 60
                 Label:
                     #spacing: 200
                     text: ""
