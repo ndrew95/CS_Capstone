@@ -161,7 +161,6 @@ class SecondWindow(Screen):
         query = """SELECT EVENTS.Description, ATHLETE.FirstName, ATHLETE.LastName, RESULTS.AthleteRank, SCHOOL.SchoolName from RESULTS, ATHLETE, EVENTS, SCHOOL WHERE RESULTS.EventID = '%s' AND RESULTS.AthleteID = ATHLETE.AthleteID AND RESULTS.EventID = EVENTS.EventID AND ATHLETE.SchoolID = SCHOOL.SchoolID""" %(secondWindow.time_to_event()[3])
         cursor.execute(query)
         next_result1 = cursor.fetchone()
-        print(next_result1)
         
         
         query = """SELECT EVENTS.Description, ATHLETE.FirstName, ATHLETE.LastName, RESULTS.AthleteRank, SCHOOL.SchoolName from RESULTS, ATHLETE, EVENTS, SCHOOL WHERE RESULTS.EventID = '%s' AND RESULTS.AthleteID = ATHLETE.AthleteID AND RESULTS.EventID = EVENTS.EventID AND ATHLETE.SchoolID = SCHOOL.SchoolID""" %(secondWindow.time_to_event()[4])
