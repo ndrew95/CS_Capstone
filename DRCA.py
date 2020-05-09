@@ -2,7 +2,7 @@ from kivy.app import App
 from kivy.lang import Builder
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.properties import StringProperty
-from kivy.uix.screenmanager import Screen, SlideTransition
+from kivy.uix.screenmanager import SlideTransition
 from kivy.uix.checkbox import CheckBox
 from kivy.utils import platform
 if platform == "ios":
