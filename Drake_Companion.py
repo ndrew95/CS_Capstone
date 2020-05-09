@@ -436,7 +436,7 @@ class SecondWindow(Screen):
         check3 = self.ids.check3
         test.time_to_event()
         if(check1.active==True and interest1==False):
-            sql = """INSERT INTO INTEREST (Description) VALUES('%s')"""%(test.time_to_event()[0])
+            sql = """INSERT INTO INTEREST (Description, Time) VALUES('%s', '%s')"""%(test.time_to_event()[0], test.time_to_event()[6])
             cursor.execute(sql)
             sql = """INSERT INTO DUPLICATE (User, Event) VALUES('%s', '%s')"""%(login123, test.time_to_event()[0])
             cursor.execute(sql)
@@ -450,7 +450,7 @@ class SecondWindow(Screen):
 
             #print(test.time_to_event()[0])
         if(check2.active==True and interest2==False):
-            sql = """INSERT INTO INTEREST (Description) VALUES('%s')"""%(test.time_to_event()[1])
+            sql = """INSERT INTO INTEREST (Description, Time) VALUES('%s', '%s')"""%(test.time_to_event()[1],test.time_to_event()[7])
             cursor.execute(sql)
             sql = """INSERT INTO DUPLICATE (User, Event) VALUES('%s', '%s')"""%(login123, test.time_to_event()[1])
             cursor.execute(sql)
@@ -460,7 +460,7 @@ class SecondWindow(Screen):
             popup.open() 
             closeButton.bind(on_press = popup.dismiss)
         if(check3.active==True and interest3==False):
-            sql = """INSERT INTO INTEREST (Description) VALUES('%s')"""%(test.time_to_event()[2])
+            sql = """INSERT INTO INTEREST (Description, Time) VALUES('%s', '%s')"""%(test.time_to_event()[2],test.time_to_event()[8])
             cursor.execute(sql)
             sql = """INSERT INTO DUPLICATE (User, Event) VALUES('%s', '%s')"""%(login123, test.time_to_event()[2])
             cursor.execute(sql)
@@ -475,23 +475,23 @@ class SecondWindow(Screen):
 
     def update_interest(self,x): 
         test = SecondWindow()
-        sql = "SELECT Description, COUNT(*) occurences FROM INTEREST GROUP BY Description HAVING COUNT(*)>1 ORDER BY occurences DESC "#i#nsertStatement = "INSERT INTO LOGIN321  (User, Pass)   VALUES('test', 'user')"
+        sql = "SELECT Description, Time, COUNT(*) occurences FROM INTEREST GROUP BY Description HAVING COUNT(*)>1 ORDER BY occurences DESC "#i#nsertStatement = "INSERT INTO LOGIN321  (User, Pass)   VALUES('test', 'user')"
         cursor.execute(sql)
         interest = cursor.fetchall()
-        print(interest[1][0])
+        #print(interest[1][0])
         events1 = self.ids.interest1
         events2 = self.ids.interest2
         events3 = self.ids.interest3
         try:
-            events1.text = interest[0][0]
+            events1.text = str(interest[0][0]) + " taking place at " + str(interest[0][1])
         except:
             x = 1
         try:
-            events2.text = interest[1][0]
+            events2.text = str(interest[1][0]) + " taking place at " + str(interest[1][1])
         except:
             x=1
         try:
-            events3.text = interest[2][0]
+            events3.text = str(interest[2][0]) + " taking place at " + str(interest[2][1])
         except:
             x=1
 
