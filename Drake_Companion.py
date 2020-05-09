@@ -3,36 +3,30 @@ from kivy.lang import Builder
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.properties import StringProperty
 from kivy.uix.screenmanager import Screen, SlideTransition
-import os
 from kivy.uix.checkbox import CheckBox
 from kivy.utils import platform
 if platform == "ios":
     from os.path import join, dirname
     import kivy.garden
     kivy.garden.garden_app_dir = join(dirname(__file__), "libs", "garden")
-from kivy.garden.mapview import MapView
 from kivy.garden.mapview import MapMarkerPopup
 from kivy.uix.bubble import Bubble
 from kivy.garden.mapview import MapView, MapMarker
+from kivy.uix.button import Button
+from kivy.uix.layout import Layout
+from kivy.uix.label import Label
+from  kivy.core.window import Window
+from kivy.clock import Clock
+from kivy.uix.popup import Popup
+from kivy.uix.gridlayout import GridLayout
 from datetime import datetime
 from datetime import timedelta
 from datetime import date
-import pymysql
-from kivy.uix.button import Button
-from kivy.uix.layout import Layout
-
-from kivy.uix.label import Label
-from  kivy.core.window import Window
-import pymysql.cursors
 import time
-from kivy.clock import Clock
-
-from kivy.uix.popup import Popup
-from kivy.uix.gridlayout import GridLayout
-import hashlib
-import os
+import pymysql
+import pymysql.cursors
 import hashlib, binascii, os
-import base64
+
 
 host='cap-comp.cpwue0appyn7.us-west-2.rds.amazonaws.com'
 port=3306
@@ -160,7 +154,7 @@ class SecondWindow(Screen):
         
         secondWindow = SecondWindow()
         secondWindow.time_to_event()
-        
+
         result1 = self.ids.result1
         result2 = self.ids.result2
         result3 = self.ids.result3
