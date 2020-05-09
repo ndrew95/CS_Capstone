@@ -160,22 +160,23 @@ class SecondWindow(Screen):
 
         query = """SELECT EVENTS.Description, ATHLETE.FirstName, ATHLETE.LastName, RESULTS.AthleteRank, SCHOOL.SchoolName from RESULTS, ATHLETE, EVENTS, SCHOOL WHERE RESULTS.EventID = '%s' AND RESULTS.AthleteID = ATHLETE.AthleteID AND RESULTS.EventID = EVENTS.EventID AND ATHLETE.SchoolID = SCHOOL.SchoolID""" %(secondWindow.time_to_event()[3])
         cursor.execute(query)
-        next_result1 = cursor.fetchall()
+        next_result1 = cursor.fetchone()
+        print(next_result1)
         
         
         query = """SELECT EVENTS.Description, ATHLETE.FirstName, ATHLETE.LastName, RESULTS.AthleteRank, SCHOOL.SchoolName from RESULTS, ATHLETE, EVENTS, SCHOOL WHERE RESULTS.EventID = '%s' AND RESULTS.AthleteID = ATHLETE.AthleteID AND RESULTS.EventID = EVENTS.EventID AND ATHLETE.SchoolID = SCHOOL.SchoolID""" %(secondWindow.time_to_event()[4])
         cursor.execute(query)
-        next_result2 = cursor.fetchall()
+        next_result2 = cursor.fetchone()
 
 
         query = """SELECT EVENTS.Description, ATHLETE.FirstName, ATHLETE.LastName, RESULTS.AthleteRank, SCHOOL.SchoolName from RESULTS, ATHLETE, EVENTS, SCHOOL WHERE RESULTS.EventID = '%s' AND RESULTS.AthleteID = ATHLETE.AthleteID AND RESULTS.EventID = EVENTS.EventID AND ATHLETE.SchoolID = SCHOOL.SchoolID""" %(secondWindow.time_to_event()[5])
         cursor.execute(query)
-        next_result3 = cursor.fetchall()
+        next_result3 = cursor.fetchone()
         
         
-        result1.text = str(next_result1[0][0]) + " Winner:  " + str(next_result1[0][1]) + " " + str(next_result1[0][2] + " of " + str(next_result1[0][4]))
-        result2.text = str(next_result2[0][0]) + " Winner:  " + str(next_result2[0][1]) + " " + str(next_result2[0][2] + " of " + str(next_result2[0][4]))
-        result3.text = str(next_result3[0][0]) + " Winner:  " + str(next_result3[0][1]) + " " + str(next_result3[0][2] + " of " + str(next_result3[0][4]))
+        result1.text = str(next_result1[0]) + " Winner:  " + str(next_result1[1]) + " " + str(next_result1[2] + " of " + str(next_result1[4]))
+        result2.text = str(next_result2[0]) + " Winner:  " + str(next_result2[1]) + " " + str(next_result2[2] + " of " + str(next_result2[4]))
+        result3.text = str(next_result3[0]) + " Winner:  " + str(next_result3[1]) + " " + str(next_result3[2] + " of " + str(next_result3[4]))
 
     def update_events(self,x):
         
