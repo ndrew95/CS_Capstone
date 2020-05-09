@@ -73,8 +73,6 @@ class MainWindow(Screen):
             popup.open() 
             closeButton.bind(on_press = popup.dismiss)
 
-        app.config.read(app.get_application_config())
-        app.config.write()
 
     def resetForm(self):
         self.ids['login'].text = ""
@@ -371,19 +369,6 @@ kv = Builder.load_file("my.kv")
 class MyMainApp(App):
     def build(self):
         return kv
-    def get_application_config(self):
-        if(not self.username):
-            return super(MyMainApp, self).get_application_config()
-
-        conf_directory = self.user_data_dir + '/' + self.username
-
-        if(not os.path.exists(conf_directory)):
-            os.makedirs(conf_directory)
-
-        return super(MyMainApp, self).get_application_config(
-            '%s/config.cfg' % (conf_directory)
-        )
-
 
 if __name__ == "__main__":
     MyMainApp().run()
