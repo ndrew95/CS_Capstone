@@ -26,13 +26,12 @@ import pymysql
 import pymysql.cursors
 import hashlib, binascii, os
 
-
+'''Connecting to the database so various features can be used'''
 host='cap-comp.cpwue0appyn7.us-west-2.rds.amazonaws.com'
 port=3306
 dbname= 'Companion'
 user="admin234"
 password="tf7A8sjX#!"
-
 
 conn = pymysql.connect(db=dbname,host=host, password=password, port=port, user=user)
 cursor = conn.cursor()
@@ -41,6 +40,11 @@ cursor = conn.cursor()
 class MainWindow(Screen):
     
     def do_login(self, loginText, passwordText):
+        '''
+        the do_login feature allows users to sign in as long as their information is correct. As passwords are encrypted via hashing,
+        the verify_password function hashes the password that is typed in, and do_login checks the password typed-in, now hashed, against
+        the databases passwords. If the password is connected with a username, a user can login
+        '''
 
         app = App.get_running_app()
         mainWindow = MainWindow()
@@ -60,12 +64,13 @@ class MainWindow(Screen):
         app.username = loginText
         app.password = passwordText
     
-
+        #checking if a user exists with the username and password#
         for i in logins:
             if(mainWindow.verify_password(i[1], app.password)==True and i[0]==app.username):
                 checkUser = True
                 break
-           
+
+        #if the username and password combo exist, then access is granted#
         if checkUser == True:
             self.manager.transition = SlideTransition(direction="left")
             self.manager.current = 'second'
@@ -86,68 +91,79 @@ class MainWindow(Screen):
 
 class SecondWindow(Screen):
     
-    #tab_pos = 'top_mid'
-
     def __init__(self, **kwargs):
         super(SecondWindow, self).__init__(**kwargs)
-        
-        
+            
     def get_next_event(self):
 
+        #querying the database to get all upcoming events (this function is used later by time_to_event)#
         cursor.execute('SELECT Description, Time, EventID from EVENTS order by time')
         next_event = cursor.fetchall()
 
         return(next_event)
 
     def time_to_event(self):
+        '''
+        the time_to_event function gets the event list from the get_next_event function. time_to_event then runs a loop to determine which
+        events are upcoming, and which events just recently ended. This function returns the events that are closest to the time currently,
+        as well as the events that most recently ended. These returned variables are then utilized to populate the results tab and the events tab
+        '''
 
         secondWindow = SecondWindow()
 
         events = secondWindow.get_next_event()
         dateNow = datetime.now().time()
 
-        date1 = date(1, 1, 1)
-        datetime1 = datetime.combine(date1, dateNow)
+        dummyDate = date(1, 1, 1)
+        dateTimeCurrent = datetime.combine(dummyDate, dateNow)
        
         firstList = []
         secondList = []
+
         count = 0 
-        
-        for i in events:
+        for event in events:
 
-            dateStart1 = datetime.strptime(str(i[1]), '%H:%M:%S')
-            stop_time = datetime.time(dateStart1)
+            eventStartTime = datetime.strptime(str(event[1]), '%H:%M:%S')
+            eventStopTime = datetime.time(eventStartTime)
 
-            datetime2 = datetime.combine(date1, stop_time)
-            
-            timeUntil = datetime2 - datetime1
+            eventTime = datetime.combine(dummyDate, eventStopTime)
 
-            if "day" in str(timeUntil):
+            timeUntilEvent = eventTime - dateTimeCurrent
+
+            if "day" in str(timeUntilEvent):
                                                                         
-                daySplit = str(timeUntil).split('day, ')
+                daySplit = str(timeUntilEvent).split('day, ')
                 firstList.append(str(daySplit[1]))
       
             else:
             
-                firstList.append(str(timeUntil))
+                firstList.append(str(timeUntilEvent))
                 
-                secondList.append(i[0])
+                secondList.append(event[0])
                 count = count + 1
 
       
         finalList = [None] * len(firstList)
         count = 0
 
-        for i in firstList:
-            colonSplit=i.split(":")
-            finalList[count] =(int(f"{colonSplit[0]}{colonSplit[1]}"))
+        for listItem in firstList:
+            timeSplit=listItem.split(":")
+            finalList[count] =(int(f"{timeSplit[0]}{timeSplit[1]}"))
             count = count +1
         
+        #obtaining the original index from the list to ensure that the correct event is obtained from the database#
         l = sorted(enumerate(finalList), key=lambda i: i[1])
         
+        #return items 0-2 are the event descriptions of closest upcoming events, return items 3-5 are the eventID's of the events that just ended,#
+        #return items 6-8 are the event times that are closest to the current time#
         return(events[l[0][0]][0], events[l[1][0]][0], events[l[2][0]][0], events[l[len(l)-1][0]][2], events[l[len(l)-2][0]][2], events[l[len(l)-3][0]][2], events[l[0][0]][1],events[l[1][0]][1], events[l[2][0]][1])
         
     def update_results(self,x):
+        '''
+        the update_results function utilizes the time_to_event function to obtain return items 3-5. These items are the eventID's of events
+        that most recently ended. 3 queries are then run against those eventID's so users can see what the results are for events that
+        most recently ended.
+        '''
         
         secondWindow = SecondWindow()
         secondWindow.time_to_event()
@@ -170,13 +186,16 @@ class SecondWindow(Screen):
         cursor.execute(query)
         next_result3 = cursor.fetchone()
         
-        
+        #"injecting" the query results into the result labels#
         result1.text = str(next_result1[0]) + " Winner:  " + str(next_result1[1]) + " " + str(next_result1[2] + " of " + str(next_result1[4]))
         result2.text = str(next_result2[0]) + " Winner:  " + str(next_result2[1]) + " " + str(next_result2[2] + " of " + str(next_result2[4]))
         result3.text = str(next_result3[0]) + " Winner:  " + str(next_result3[1]) + " " + str(next_result3[2] + " of " + str(next_result3[4]))
 
     def update_events(self,x):
-        
+        '''
+        Update events utilizes time_to_event to display events that are closest to the current time
+        '''
+
         secondWindow = SecondWindow()
         secondWindow.time_to_event()
 
@@ -188,10 +207,12 @@ class SecondWindow(Screen):
         time2 = self.ids.time2
         time3 = self.ids.time3
         
+        #"Injecting" the event description into the events labels#
         event1.text = secondWindow.time_to_event()[0]
         event2.text = secondWindow.time_to_event()[1]
         event3.text = secondWindow.time_to_event()[2]
 
+        #"Injecting" the times into the time labels#
         time1.text = str(secondWindow.time_to_event()[6])
         time2.text = str(secondWindow.time_to_event()[7])
         time3.text = str(secondWindow.time_to_event()[8])
@@ -199,9 +220,16 @@ class SecondWindow(Screen):
         
     def reset_checkbox(self):
 
+        '''
+        reset_checkbox resets the checkboxes when the submit interest button is pressed. Furthermore, reset_checkbox also
+        sends an insert query to the "Interest" table of the database so that interest can be calculated in various events.
+        there is also a "safety-check" to ensure that the same user cannot submit interest for the same event multiple times.
+        '''
+
         secondWindow = SecondWindow()
         mainWindow = MainWindow()
 
+        #obtaining the checkboxes by their id#
         check1 = self.ids.check1
         check2 = self.ids.check2
         check3 = self.ids.check3
@@ -211,24 +239,28 @@ class SecondWindow(Screen):
         layout.add_widget(closeButton)
         popup = Popup(title ='Already Submitted Interest for this Event', content = layout, size_hint=(None, None), size=(500,200)) 
 
+        #setting the interest to false at the start#
         interest1 = False
         interest2 = False
         interest3 = False
        
+        #querying the "DUPLICATE" table#
         sql = "SELECT User, Event FROM DUPLICATE"
         cursor.execute(sql)
         duplicate = cursor.fetchall()
 
-        
-        for i in duplicate:
-            if i[0] == login123 and i[1] == secondWindow.time_to_event()[0]:
+        #if a user has already submitted interest in an event, the interest is set to true, depending on which#
+        #event they showed interest in#
+        for users in duplicate:
+            if users[0] == login123 and users[1] == secondWindow.time_to_event()[0]:
                 interest1=True 
-            elif i[0] == login123 and i[1] == secondWindow.time_to_event()[1]:
+            elif users[0] == login123 and users[1] == secondWindow.time_to_event()[1]:
                 interest2=True
-            elif i[0] == login123 and i[1] == secondWindow.time_to_event()[2]:
+            elif users[0] == login123 and users[1] == secondWindow.time_to_event()[2]:
                 interest3=True
         
-        
+        #if the checkboxes are active, and a user has not already submitted interest, the event that someone indicated interest for#
+        #is inserted into the INTEREST table of the database.#
         if(check1.active==True and interest1==False):
             sql = """INSERT INTO INTEREST (Description, Time) VALUES('%s', '%s')"""%(secondWindow.time_to_event()[0], secondWindow.time_to_event()[6])
             cursor.execute(sql)
@@ -238,6 +270,8 @@ class SecondWindow(Screen):
 
             conn.commit()
 
+        #if the interest is true, meaning that the user already submitted interest, display a popup indicating that they already submitted
+        #their interest, and do not insert anything into the INTEREST table#
         elif(check1.active==True and interest1==True):
             popup.open() 
             closeButton.bind(on_press = popup.dismiss)
@@ -268,12 +302,15 @@ class SecondWindow(Screen):
             popup.open() 
             closeButton.bind(on_press = popup.dismiss)
 
+        #resetting the checkboxes
         for child in reversed(self.ids.two.children):
             if isinstance(child, CheckBox):
                 child.active = False
 
     def update_interest(self,x): 
-
+        '''
+        the update_interest function updates the interest tab to show events that are upcoming, yet have a lot of interest
+        '''
         secondWindow = SecondWindow()
         sql = "SELECT Description, Time, COUNT(*) occurences FROM INTEREST GROUP BY Description HAVING COUNT(*)>1 ORDER BY occurences DESC "
         cursor.execute(sql)
@@ -281,38 +318,39 @@ class SecondWindow(Screen):
         dateNow = datetime.now().time()
         
 
-        colonSplit=str(dateNow).split(":")
-        timeNow =(int(f"{colonSplit[0]}{colonSplit[1]}"))
+        timeSplit=str(dateNow).split(":")
+        timeNow =(int(f"{timeSplit[0]}{timeSplit[1]}"))
 
-        colonSplit=str(interest[0][1]).split(":")
-        interest1Time =(int(f"{colonSplit[0]}{colonSplit[1]}"))
+        timeSplit=str(interest[0][1]).split(":")
+        interest1Time =(int(f"{timeSplit[0]}{timeSplit[1]}"))
 
-        colonSplit=str(interest[1][1]).split(":")
-        interest2Time =(int(f"{colonSplit[0]}{colonSplit[1]}"))
+        timeSplit=str(interest[1][1]).split(":")
+        interest2Time =(int(f"{timeSplit[0]}{timeSplit[1]}"))
 
-        colonSplit=str(interest[2][1]).split(":")
-        interest3Time =(int(f"{colonSplit[0]}{colonSplit[1]}"))
+        timeSplit=str(interest[2][1]).split(":")
+        interest3Time =(int(f"{timeSplit[0]}{timeSplit[1]}"))
 
         
         interest1 = self.ids.interest1
         interest2 = self.ids.interest2
         interest3 = self.ids.interest3
+
         time1=False
         time2=False
         time3=False
 
-        for i in interest:
-            colonSplit=str(i[1]).split(":")
-            interestTime =(int(f"{colonSplit[0]}{colonSplit[1]}"))
+        for events in interest:
+            timeSplit=str(events[1]).split(":")
+            interestTime =(int(f"{timeSplit[0]}{timeSplit[1]}"))
 
             if(timeNow<=interestTime and time1==False):
-                interest1.text = str(i[0]) + " taking place at " + str(i[1])
+                interest1.text = str(events[0]) + " taking place at " + str(events[1])
                 time1=True
             elif(timeNow<=interestTime and time2==False):
-                interest2.text = str(i[0]) + " taking place at " + str(i[1])
+                interest2.text = str(events[0]) + " taking place at " + str(events[1])
                 time2=True
             elif(timeNow<=interestTime and time3==False):
-                interest3.text = str(i[0]) + " taking place at " + str(i[1])
+                interest3.text = str(events[0]) + " taking place at " + str(events[1])
                 time3=True
 
 
@@ -322,8 +360,14 @@ class DefaultWindow(Screen):
     
 class CreateWindow(Screen):
 
-    def Create_Account(self,loginText, passwordText):
-
+    def create_account(self,loginText, passwordText):
+        '''
+        the create_account functions allows users to create an account. Passwords are encrypted to ensure that the database administrator
+        cannot see real passwords. There are a few "safety-checks." One ensures that the fields are not blank, another ensures that the 
+        username is not taken, and one ensures that the account was created successfully. If the fields are blank, a popup will indicate
+        that they cannot be blank. If the user exists, it will alert the user that it already exists. If the account is created successfully
+        it will also alert the user.
+        '''
         createWindow = CreateWindow()
         app = App.get_running_app()
         app.username = loginText
@@ -349,10 +393,13 @@ class CreateWindow(Screen):
         popup2 = Popup(title ='This Username Already Exists', content = layout2, size_hint=(None, None), size=(500,200))
         popup3 = Popup(title ='Account Successfully Created', content = layout3, size_hint=(None, None), size=(500,200))    
 
-        for i in logins:
-            if i[0]==app.username:
+        #checking if the username exists
+        for users in logins:
+            if users[0]==app.username:
                 duplicateUser=True
         
+        #checking that the fields arent blank and that the username doesnt exist. If these are both true,#
+        #the password is encrypted, and the login information is sent to the database#
         if app.username!='' and app.password!='' and duplicateUser==False:
             salt = os.urandom(32)
             password = createWindow.hash_password(app.password)
@@ -385,7 +432,6 @@ class MapWindow(Screen):
 
 class WindowManager(ScreenManager):
     pass
-
 
 
 kv = Builder.load_file("my.kv")
