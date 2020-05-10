@@ -41,6 +41,7 @@ cursor = conn.cursor()
 class MainWindow(Screen):
     
     def do_login(self, loginText, passwordText):
+
         app = App.get_running_app()
         mainWindow = MainWindow()
 
@@ -82,21 +83,24 @@ class MainWindow(Screen):
         pwdhash = binascii.hexlify(pwdhash).decode('ascii')
 
         return pwdhash == stored_password
+
 class SecondWindow(Screen):
     
-    tab_pos = 'top_mid'
+    #tab_pos = 'top_mid'
 
     def __init__(self, **kwargs):
         super(SecondWindow, self).__init__(**kwargs)
         
         
     def get_next_event(self):
+
         cursor.execute('SELECT Description, Time, EventID from EVENTS order by time')
         next_event = cursor.fetchall()
 
         return(next_event)
 
     def time_to_event(self):
+
         secondWindow = SecondWindow()
 
         events = secondWindow.get_next_event()
@@ -194,6 +198,7 @@ class SecondWindow(Screen):
 
         
     def reset_checkbox(self):
+
         secondWindow = SecondWindow()
         mainWindow = MainWindow()
 
@@ -268,6 +273,7 @@ class SecondWindow(Screen):
                 child.active = False
 
     def update_interest(self,x): 
+
         secondWindow = SecondWindow()
         sql = "SELECT Description, Time, COUNT(*) occurences FROM INTEREST GROUP BY Description HAVING COUNT(*)>1 ORDER BY occurences DESC "
         cursor.execute(sql)
@@ -315,19 +321,39 @@ class DefaultWindow(Screen):
     pass
     
 class CreateWindow(Screen):
+
     def Create_Account(self,loginText, passwordText):
+
         createWindow = CreateWindow()
         app = App.get_running_app()
         app.username = loginText
+        duplicateUser = False
+
         app.password = passwordText
+        cursor.execute('SELECT User, Pass from LOGIN321')
+        logins = cursor.fetchall()
 
         layout = GridLayout(cols = 1)
-        closeButton = Button(text = "Close") 
-        layout.add_widget(closeButton)
-        popup = Popup(title ='Fields cannot be Blank', content = layout, size_hint=(None, None), size=(500,200))   
+        layout2 = GridLayout(cols = 1)
+        layout3 = GridLayout(cols = 1)
 
+        closeButton = Button(text = "Close") 
+        closeButton2 = Button(text = "Close")
+        closeButton3 = Button(text = "Close")
+
+        layout.add_widget(closeButton)
+        layout2.add_widget(closeButton2)
+        layout3.add_widget(closeButton3)
+
+        popup = Popup(title ='Fields cannot be Blank', content = layout, size_hint=(None, None), size=(500,200)) 
+        popup2 = Popup(title ='This Username Already Exists', content = layout2, size_hint=(None, None), size=(500,200))
+        popup3 = Popup(title ='Account Successfully Created', content = layout3, size_hint=(None, None), size=(500,200))    
+
+        for i in logins:
+            if i[0]==app.username:
+                duplicateUser=True
         
-        if app.username!='' and app.password!='':
+        if app.username!='' and app.password!='' and duplicateUser==False:
             salt = os.urandom(32)
             password = createWindow.hash_password(app.password)
 
@@ -335,10 +361,16 @@ class CreateWindow(Screen):
             cursor.execute(sql)
             conn.commit()
 
-        else:
+            popup3.open()
+            closeButton3.bind(on_press=popup3.dismiss)
+
+        if duplicateUser==True:
+            popup2.open()
+            closeButton2.bind(on_press = popup2.dismiss)
+            
+        if (app.username=='' and app.password=='') or (app.username=='') or (app.password==''):
             popup.open() 
             closeButton.bind(on_press = popup.dismiss)
-
 
     def hash_password(self, password):
         """Hash a password for storing."""
@@ -348,11 +380,8 @@ class CreateWindow(Screen):
         return (salt + pwdhash).decode('ascii')
         
 class MapWindow(Screen):
-    def set_marker_position(self,x):
-        
-        map = MapView(zoom=11, lat=41.605, lon=-93.655, double_tap_zoom = True)
-        marker_1 = MapMarker(lon=-93.655, lat=41.605)
-        map.add_marker(marker_1)
+    pass
+
 
 class WindowManager(ScreenManager):
     pass
