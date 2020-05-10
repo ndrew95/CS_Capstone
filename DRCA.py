@@ -51,24 +51,27 @@ class MainWindow(Screen):
 
         global login123
         login123 =loginText
+
+        app.username = loginText
+        app.password = passwordText
+
         checkUser = False
 
         layout = GridLayout(cols = 1)
         closeButton = Button(text = "Close") 
         layout.add_widget(closeButton)
-        popup = Popup(title ='Incorrect Login Information', content = layout, size_hint=(None, None), size=(500,200))  
+        incorrectPopup = Popup(title ='Incorrect Login Information', content = layout, size_hint=(None, None), size=(500,200))  
 
-        cursor.execute('SELECT User, Pass from LOGIN321')
-        logins = cursor.fetchall()
 
-        app.username = loginText
-        app.password = passwordText
+        userQuery = """SELECT User, Pass from LOGIN321 WHERE User='%s'"""%(app.username)
+        cursor.execute(userQuery)
+        logins = cursor.fetchone()
+        
     
         #checking if a user exists with the username and password#
-        for i in logins:
-            if(mainWindow.verify_password(i[1], app.password)==True and i[0]==app.username):
+        if logins!= None:
+            if(mainWindow.verify_password(logins[1], app.password)==True):
                 checkUser = True
-                break
 
         #if the username and password combo exist, then access is granted#
         if checkUser == True:
@@ -76,8 +79,8 @@ class MainWindow(Screen):
             self.manager.current = 'second'
 
         else:
-            popup.open() 
-            closeButton.bind(on_press = popup.dismiss)
+            incorrectPopup.open() 
+            closeButton.bind(on_press = incorrectPopup.dismiss)
 
 
     def verify_password(self, stored_password, provided_password):
@@ -197,7 +200,6 @@ class SecondWindow(Screen):
         '''
 
         secondWindow = SecondWindow()
-        secondWindow.time_to_event()
 
         event1 = self.ids.event1
         event2 = self.ids.event2
@@ -227,7 +229,9 @@ class SecondWindow(Screen):
         '''
 
         secondWindow = SecondWindow()
-        mainWindow = MainWindow()
+        firstEvent = secondWindow.time_to_event()[0]
+        secondEvent = secondWindow.time_to_event()[1]
+        thirdEvent = secondWindow.time_to_event()[2]
 
         #obtaining the checkboxes by their id#
         check1 = self.ids.check1
@@ -245,27 +249,29 @@ class SecondWindow(Screen):
         interest3 = False
        
         #querying the "DUPLICATE" table#
-        sql = "SELECT User, Event FROM DUPLICATE"
+        sql = """SELECT User, Event FROM DUPLICATE WHERE User = '%s'"""%(login123)
         cursor.execute(sql)
         duplicate = cursor.fetchall()
 
+
         #if a user has already submitted interest in an event, the interest is set to true, depending on which#
         #event they showed interest in#
-        for users in duplicate:
-            if users[0] == login123 and users[1] == secondWindow.time_to_event()[0]:
-                interest1=True 
-            elif users[0] == login123 and users[1] == secondWindow.time_to_event()[1]:
-                interest2=True
-            elif users[0] == login123 and users[1] == secondWindow.time_to_event()[2]:
-                interest3=True
+        if duplicate!=None:
+            for users in duplicate:
+                if users[1] == firstEvent:
+                    interest1=True 
+                elif users[1] == secondEvent:
+                    interest2=True
+                elif users[1] == thirdEvent:
+                    interest3=True
         
         #if the checkboxes are active, and a user has not already submitted interest, the event that someone indicated interest for#
         #is inserted into the INTEREST table of the database.#
         if(check1.active==True and interest1==False):
-            sql = """INSERT INTO INTEREST (Description, Time) VALUES('%s', '%s')"""%(secondWindow.time_to_event()[0], secondWindow.time_to_event()[6])
+            sql = """INSERT INTO INTEREST (Description, Time) VALUES('%s', '%s')"""%(firstEvent, secondWindow.time_to_event()[6])
             cursor.execute(sql)
 
-            sql = """INSERT INTO DUPLICATE (User, Event) VALUES('%s', '%s')"""%(login123, secondWindow.time_to_event()[0])
+            sql = """INSERT INTO DUPLICATE (User, Event) VALUES('%s', '%s')"""%(login123, firstEvent)
             cursor.execute(sql)
 
             conn.commit()
@@ -277,10 +283,10 @@ class SecondWindow(Screen):
             closeButton.bind(on_press = popup.dismiss)
         
         if(check2.active==True and interest2==False):
-            sql = """INSERT INTO INTEREST (Description, Time) VALUES('%s', '%s')"""%(secondWindow.time_to_event()[1], secondWindow.time_to_event()[7])
+            sql = """INSERT INTO INTEREST (Description, Time) VALUES('%s', '%s')"""%(secondEvent, secondWindow.time_to_event()[7])
             cursor.execute(sql)
 
-            sql = """INSERT INTO DUPLICATE (User, Event) VALUES('%s', '%s')"""%(login123, secondWindow.time_to_event()[1])
+            sql = """INSERT INTO DUPLICATE (User, Event) VALUES('%s', '%s')"""%(login123, secondEvent)
             cursor.execute(sql)
 
             conn.commit()
@@ -290,10 +296,10 @@ class SecondWindow(Screen):
             closeButton.bind(on_press = popup.dismiss)
 
         if(check3.active==True and interest3==False):
-            sql = """INSERT INTO INTEREST (Description, Time) VALUES('%s', '%s')"""%(secondWindow.time_to_event()[2], secondWindow.time_to_event()[8])
+            sql = """INSERT INTO INTEREST (Description, Time) VALUES('%s', '%s')"""%(thirdEvent, secondWindow.time_to_event()[8])
             cursor.execute(sql)
 
-            sql = """INSERT INTO DUPLICATE (User, Event) VALUES('%s', '%s')"""%(login123, secondWindow.time_to_event()[2])
+            sql = """INSERT INTO DUPLICATE (User, Event) VALUES('%s', '%s')"""%(login123, thirdEvent)
             cursor.execute(sql)
 
             conn.commit()
@@ -311,7 +317,6 @@ class SecondWindow(Screen):
         '''
         the update_interest function updates the interest tab to show events that are upcoming, yet have a lot of interest
         '''
-        secondWindow = SecondWindow()
         sql = "SELECT Description, Time, COUNT(*) occurences FROM INTEREST GROUP BY Description HAVING COUNT(*)>1 ORDER BY occurences DESC "
         cursor.execute(sql)
         interest = cursor.fetchall()
@@ -370,11 +375,14 @@ class CreateWindow(Screen):
         '''
         createWindow = CreateWindow()
         app = App.get_running_app()
+
         app.username = loginText
+        app.password = passwordText
+
         duplicateUser = False
 
-        app.password = passwordText
-        cursor.execute('SELECT User, Pass from LOGIN321')
+        query = """SELECT User, Pass from LOGIN321 WHERE User = '%s'"""%(app.username)
+        cursor.execute(query)
         logins = cursor.fetchall()
 
         layout = GridLayout(cols = 1)
@@ -389,14 +397,13 @@ class CreateWindow(Screen):
         layout2.add_widget(closeButton2)
         layout3.add_widget(closeButton3)
 
-        popup = Popup(title ='Fields cannot be Blank', content = layout, size_hint=(None, None), size=(500,200)) 
-        popup2 = Popup(title ='This Username Already Exists', content = layout2, size_hint=(None, None), size=(500,200))
-        popup3 = Popup(title ='Account Successfully Created', content = layout3, size_hint=(None, None), size=(500,200))    
+        blankPopup = Popup(title ='Fields cannot be Blank', content = layout, size_hint=(None, None), size=(500,200)) 
+        existsPopup = Popup(title ='This Username Already Exists', content = layout2, size_hint=(None, None), size=(500,200))
+        createdPopup = Popup(title ='Account Successfully Created', content = layout3, size_hint=(None, None), size=(500,200))    
 
         #checking if the username exists
-        for users in logins:
-            if users[0]==app.username:
-                duplicateUser=True
+        if logins:
+            duplicateUser=True
         
         #checking that the fields arent blank and that the username doesnt exist. If these are both true,#
         #the password is encrypted, and the login information is sent to the database#
@@ -408,16 +415,16 @@ class CreateWindow(Screen):
             cursor.execute(sql)
             conn.commit()
 
-            popup3.open()
-            closeButton3.bind(on_press=popup3.dismiss)
+            createdPopup.open()
+            closeButton3.bind(on_press=createdPopup.dismiss)
 
         if duplicateUser==True:
-            popup2.open()
-            closeButton2.bind(on_press = popup2.dismiss)
+            existsPopup.open()
+            closeButton2.bind(on_press = existsPopup.dismiss)
             
         if (app.username=='' and app.password=='') or (app.username=='') or (app.password==''):
-            popup.open() 
-            closeButton.bind(on_press = popup.dismiss)
+            blankPopup.open() 
+            closeButton.bind(on_press = blankPopup.dismiss)
 
     def hash_password(self, password):
         """Hash a password for storing."""
