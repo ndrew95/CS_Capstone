@@ -1,4 +1,4 @@
-# CS_Capstone
+# Drake CS Capstone Team I
 Drake Relays Companion Application
 
 The Drake Relays Companion Application is one that aids spectators of the Drake Relays. It ensures that people will not miss upcoming events, that they can see the most recent results, and alerts users to what upcoming events have a lot of people interested in them.
