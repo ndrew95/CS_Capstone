@@ -7,7 +7,7 @@ To Run:
 
 First, Kivy will need to be installed in the computer running the application (assuming the computer has Python installed).
 
-Install:
+
   Windows: 
   
            Create a virtual env: 
