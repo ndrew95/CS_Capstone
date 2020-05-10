@@ -86,12 +86,9 @@ class MainWindow(Screen):
 
 class SecondWindow(Screen):
     
-    #tab_pos = 'top_mid'
-
     def __init__(self, **kwargs):
         super(SecondWindow, self).__init__(**kwargs)
-        
-        
+            
     def get_next_event(self):
 
         cursor.execute('SELECT Description, Time, EventID from EVENTS order by time')
@@ -106,41 +103,41 @@ class SecondWindow(Screen):
         events = secondWindow.get_next_event()
         dateNow = datetime.now().time()
 
-        date1 = date(1, 1, 1)
-        datetime1 = datetime.combine(date1, dateNow)
+        dummyDate = date(1, 1, 1)
+        dateTimeCurrent = datetime.combine(dummyDate, dateNow)
        
         firstList = []
         secondList = []
+
         count = 0 
-        
-        for i in events:
+        for event in events:
 
-            dateStart1 = datetime.strptime(str(i[1]), '%H:%M:%S')
-            stop_time = datetime.time(dateStart1)
+            eventStartTime = datetime.strptime(str(event[1]), '%H:%M:%S')
+            eventStopTime = datetime.time(eventStartTime)
 
-            datetime2 = datetime.combine(date1, stop_time)
-            
-            timeUntil = datetime2 - datetime1
+            eventTime = datetime.combine(dummyDate, eventStopTime)
 
-            if "day" in str(timeUntil):
+            timeUntilEvent = eventTime - dateTimeCurrent
+
+            if "day" in str(timeUntilEvent):
                                                                         
-                daySplit = str(timeUntil).split('day, ')
+                daySplit = str(timeUntilEvent).split('day, ')
                 firstList.append(str(daySplit[1]))
       
             else:
             
-                firstList.append(str(timeUntil))
+                firstList.append(str(timeUntilEvent))
                 
-                secondList.append(i[0])
+                secondList.append(event[0])
                 count = count + 1
 
       
         finalList = [None] * len(firstList)
         count = 0
 
-        for i in firstList:
-            colonSplit=i.split(":")
-            finalList[count] =(int(f"{colonSplit[0]}{colonSplit[1]}"))
+        for listItem in firstList:
+            timeSplit=listItem.split(":")
+            finalList[count] =(int(f"{timeSplit[0]}{timeSplit[1]}"))
             count = count +1
         
         l = sorted(enumerate(finalList), key=lambda i: i[1])
@@ -220,12 +217,12 @@ class SecondWindow(Screen):
         duplicate = cursor.fetchall()
 
         
-        for i in duplicate:
-            if i[0] == login123 and i[1] == secondWindow.time_to_event()[0]:
+        for users in duplicate:
+            if users[0] == login123 and users[1] == secondWindow.time_to_event()[0]:
                 interest1=True 
-            elif i[0] == login123 and i[1] == secondWindow.time_to_event()[1]:
+            elif users[0] == login123 and users[1] == secondWindow.time_to_event()[1]:
                 interest2=True
-            elif i[0] == login123 and i[1] == secondWindow.time_to_event()[2]:
+            elif users[0] == login123 and users[1] == secondWindow.time_to_event()[2]:
                 interest3=True
         
         
@@ -281,38 +278,39 @@ class SecondWindow(Screen):
         dateNow = datetime.now().time()
         
 
-        colonSplit=str(dateNow).split(":")
-        timeNow =(int(f"{colonSplit[0]}{colonSplit[1]}"))
+        timeSplit=str(dateNow).split(":")
+        timeNow =(int(f"{timeSplit[0]}{timeSplit[1]}"))
 
-        colonSplit=str(interest[0][1]).split(":")
-        interest1Time =(int(f"{colonSplit[0]}{colonSplit[1]}"))
+        timeSplit=str(interest[0][1]).split(":")
+        interest1Time =(int(f"{timeSplit[0]}{timeSplit[1]}"))
 
-        colonSplit=str(interest[1][1]).split(":")
-        interest2Time =(int(f"{colonSplit[0]}{colonSplit[1]}"))
+        timeSplit=str(interest[1][1]).split(":")
+        interest2Time =(int(f"{timeSplit[0]}{timeSplit[1]}"))
 
-        colonSplit=str(interest[2][1]).split(":")
-        interest3Time =(int(f"{colonSplit[0]}{colonSplit[1]}"))
+        timeSplit=str(interest[2][1]).split(":")
+        interest3Time =(int(f"{timeSplit[0]}{timeSplit[1]}"))
 
         
         interest1 = self.ids.interest1
         interest2 = self.ids.interest2
         interest3 = self.ids.interest3
+
         time1=False
         time2=False
         time3=False
 
-        for i in interest:
-            colonSplit=str(i[1]).split(":")
-            interestTime =(int(f"{colonSplit[0]}{colonSplit[1]}"))
+        for events in interest:
+            timeSplit=str(events[1]).split(":")
+            interestTime =(int(f"{timeSplit[0]}{timeSplit[1]}"))
 
             if(timeNow<=interestTime and time1==False):
-                interest1.text = str(i[0]) + " taking place at " + str(i[1])
+                interest1.text = str(events[0]) + " taking place at " + str(events[1])
                 time1=True
             elif(timeNow<=interestTime and time2==False):
-                interest2.text = str(i[0]) + " taking place at " + str(i[1])
+                interest2.text = str(events[0]) + " taking place at " + str(events[1])
                 time2=True
             elif(timeNow<=interestTime and time3==False):
-                interest3.text = str(i[0]) + " taking place at " + str(i[1])
+                interest3.text = str(events[0]) + " taking place at " + str(events[1])
                 time3=True
 
 
@@ -349,8 +347,8 @@ class CreateWindow(Screen):
         popup2 = Popup(title ='This Username Already Exists', content = layout2, size_hint=(None, None), size=(500,200))
         popup3 = Popup(title ='Account Successfully Created', content = layout3, size_hint=(None, None), size=(500,200))    
 
-        for i in logins:
-            if i[0]==app.username:
+        for users in logins:
+            if users[0]==app.username:
                 duplicateUser=True
         
         if app.username!='' and app.password!='' and duplicateUser==False:
