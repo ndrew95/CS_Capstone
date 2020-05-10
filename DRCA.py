@@ -320,7 +320,7 @@ class DefaultWindow(Screen):
     
 class CreateWindow(Screen):
 
-    def Create_Account(self,loginText, passwordText):
+    def create_account(self,loginText, passwordText):
 
         createWindow = CreateWindow()
         app = App.get_running_app()
