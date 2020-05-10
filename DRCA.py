@@ -36,7 +36,6 @@ password="tf7A8sjX#!"
 conn = pymysql.connect(db=dbname,host=host, password=password, port=port, user=user)
 cursor = conn.cursor()
 
-
 class MainWindow(Screen):
     
     def do_login(self, loginText, passwordText):
@@ -113,42 +112,39 @@ class SecondWindow(Screen):
         '''
 
         secondWindow = SecondWindow()
-
         events = secondWindow.get_next_event()
-        dateNow = datetime.now().time()
+
+        timeNow = datetime.now().time()
 
         dummyDate = date(1, 1, 1)
-        dateTimeCurrent = datetime.combine(dummyDate, dateNow)
+        dateTimeCurrent = datetime.combine(dummyDate, timeNow)
        
         firstList = []
-        secondList = []
 
         count = 0 
         for event in events:
 
-            eventStartTime = datetime.strptime(str(event[1]), '%H:%M:%S')
-            eventStopTime = datetime.time(eventStartTime)
+            eventDateTime = datetime.strptime(str(event[1]), '%H:%M:%S')
+            eventStartTime = datetime.time(eventDateTime)
 
-            eventTime = datetime.combine(dummyDate, eventStopTime)
+            eventTime = datetime.combine(dummyDate, eventStartTime)
 
+            #the difference of time between the current time and the time to the event#
             timeUntilEvent = eventTime - dateTimeCurrent
 
-            if "day" in str(timeUntilEvent):
-                                                                        
+            if "day" in str(timeUntilEvent):                                                     
                 daySplit = str(timeUntilEvent).split('day, ')
                 firstList.append(str(daySplit[1]))
       
             else:
-            
                 firstList.append(str(timeUntilEvent))
-                
-                secondList.append(event[0])
                 count = count + 1
 
       
         finalList = [None] * len(firstList)
         count = 0
 
+        #splitting the time so it can be properly sorted#
         for listItem in firstList:
             timeSplit=listItem.split(":")
             finalList[count] =(int(f"{timeSplit[0]}{timeSplit[1]}"))
@@ -169,12 +165,12 @@ class SecondWindow(Screen):
         '''
         
         secondWindow = SecondWindow()
-        secondWindow.time_to_event()
 
         result1 = self.ids.result1
         result2 = self.ids.result2
         result3 = self.ids.result3
 
+        #these  queries find the events, athlete, and results of the most recently ended events#
         query = """SELECT EVENTS.Description, ATHLETE.FirstName, ATHLETE.LastName, RESULTS.AthleteRank, SCHOOL.SchoolName from RESULTS, ATHLETE, EVENTS, SCHOOL WHERE RESULTS.EventID = '%s' AND RESULTS.AthleteID = ATHLETE.AthleteID AND RESULTS.EventID = EVENTS.EventID AND ATHLETE.SchoolID = SCHOOL.SchoolID""" %(secondWindow.time_to_event()[3])
         cursor.execute(query)
         next_result1 = cursor.fetchone()
@@ -241,7 +237,7 @@ class SecondWindow(Screen):
         layout = GridLayout(cols = 1)
         closeButton = Button(text = "Close")  
         layout.add_widget(closeButton)
-        popup = Popup(title ='Already Submitted Interest for this Event', content = layout, size_hint=(None, None), size=(500,200)) 
+        alreadyPopup = Popup(title ='Already Submitted Interest for this Event', content = layout, size_hint=(None, None), size=(500,200)) 
 
         #setting the interest to false at the start#
         interest1 = False
@@ -279,8 +275,8 @@ class SecondWindow(Screen):
         #if the interest is true, meaning that the user already submitted interest, display a popup indicating that they already submitted
         #their interest, and do not insert anything into the INTEREST table#
         elif(check1.active==True and interest1==True):
-            popup.open() 
-            closeButton.bind(on_press = popup.dismiss)
+            alreadyPopup.open() 
+            closeButton.bind(on_press = alreadyPopup.dismiss)
         
         if(check2.active==True and interest2==False):
             sql = """INSERT INTO INTEREST (Description, Time) VALUES('%s', '%s')"""%(secondEvent, secondWindow.time_to_event()[7])
@@ -292,8 +288,8 @@ class SecondWindow(Screen):
             conn.commit()
 
         elif(check2.active==True and interest2==True):
-            popup.open() 
-            closeButton.bind(on_press = popup.dismiss)
+            alreadyPopup.open() 
+            closeButton.bind(on_press = alreadyPopup.dismiss)
 
         if(check3.active==True and interest3==False):
             sql = """INSERT INTO INTEREST (Description, Time) VALUES('%s', '%s')"""%(thirdEvent, secondWindow.time_to_event()[8])
@@ -305,8 +301,8 @@ class SecondWindow(Screen):
             conn.commit()
 
         elif(check3.active==True and interest3==True):
-            popup.open() 
-            closeButton.bind(on_press = popup.dismiss)
+            alreadyPopup.open() 
+            closeButton.bind(on_press = alreadyPopup.dismiss)
 
         #resetting the checkboxes
         for child in reversed(self.ids.two.children):
@@ -319,9 +315,9 @@ class SecondWindow(Screen):
         '''
         sql = "SELECT Description, Time, COUNT(*) occurences FROM INTEREST GROUP BY Description HAVING COUNT(*)>1 ORDER BY occurences DESC "
         cursor.execute(sql)
+
         interest = cursor.fetchall()
         dateNow = datetime.now().time()
-        
 
         timeSplit=str(dateNow).split(":")
         timeNow =(int(f"{timeSplit[0]}{timeSplit[1]}"))
@@ -334,7 +330,6 @@ class SecondWindow(Screen):
 
         timeSplit=str(interest[2][1]).split(":")
         interest3Time =(int(f"{timeSplit[0]}{timeSplit[1]}"))
-
         
         interest1 = self.ids.interest1
         interest2 = self.ids.interest2
@@ -344,6 +339,8 @@ class SecondWindow(Screen):
         time2=False
         time3=False
 
+        #populating the results page that only shows upcoming events, not events that already happened. This for loop also
+        #ensures that labels won't bee populated more than once.
         for events in interest:
             timeSplit=str(events[1]).split(":")
             interestTime =(int(f"{timeSplit[0]}{timeSplit[1]}"))
@@ -357,6 +354,8 @@ class SecondWindow(Screen):
             elif(timeNow<=interestTime and time3==False):
                 interest3.text = str(events[0]) + " taking place at " + str(events[1])
                 time3=True
+            if(time1==True and time2==True and time3==True):
+                break
 
 
 
@@ -381,10 +380,6 @@ class CreateWindow(Screen):
 
         duplicateUser = False
 
-        query = """SELECT User, Pass from LOGIN321 WHERE User = '%s'"""%(app.username)
-        cursor.execute(query)
-        logins = cursor.fetchall()
-
         layout = GridLayout(cols = 1)
         layout2 = GridLayout(cols = 1)
         layout3 = GridLayout(cols = 1)
@@ -399,7 +394,12 @@ class CreateWindow(Screen):
 
         blankPopup = Popup(title ='Fields cannot be Blank', content = layout, size_hint=(None, None), size=(500,200)) 
         existsPopup = Popup(title ='This Username Already Exists', content = layout2, size_hint=(None, None), size=(500,200))
-        createdPopup = Popup(title ='Account Successfully Created', content = layout3, size_hint=(None, None), size=(500,200))    
+        createdPopup = Popup(title ='Account Successfully Created', content = layout3, size_hint=(None, None), size=(500,200))  
+
+
+        query = """SELECT User, Pass from LOGIN321 WHERE User = '%s'"""%(app.username)
+        cursor.execute(query)
+        logins = cursor.fetchall()
 
         #checking if the username exists
         if logins:
@@ -408,7 +408,7 @@ class CreateWindow(Screen):
         #checking that the fields arent blank and that the username doesnt exist. If these are both true,#
         #the password is encrypted, and the login information is sent to the database#
         if app.username!='' and app.password!='' and duplicateUser==False:
-            salt = os.urandom(32)
+           
             password = createWindow.hash_password(app.password)
 
             sql = """INSERT INTO LOGIN321 (User, Pass) VALUES('%s','%s')"""%(app.username, password)
@@ -436,13 +436,10 @@ class CreateWindow(Screen):
 class MapWindow(Screen):
     pass
 
-
 class WindowManager(ScreenManager):
     pass
 
-
 kv = Builder.load_file("my.kv")
-
 
 class MyMainApp(App):
     def build(self):
