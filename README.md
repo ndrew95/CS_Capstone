@@ -55,7 +55,7 @@ Running DRCA:
   
   In the Application:
 
-      If you are a new user, you will be required to sign up via the "Sign Up" button. The new window that appears will prompt you to enter a username and password. Passwords are encrypted so the administrator of the database cannot see passwords.
+      If you are a new user, you will be required to sign up via the "Sign Up" button. The new window that appears will prompt       you to enter a username and password. Passwords are encrypted so the administrator of the database cannot see passwords.
   
   
 
