@@ -48,7 +48,7 @@ First, Kivy will need to be installed in the computer running the application (a
 
 Secondly, PyMySql will need to be installed
 
-         Pip Install pymysql 
+          pip Install pymysql 
                   
   Additionally, Garden may or may not need to be installed. Garden also may or may not need to be upgraded--this depends on     the computer used.
 
