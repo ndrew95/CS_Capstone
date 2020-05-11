@@ -46,6 +46,10 @@ First, Kivy will need to be installed in the computer running the application (a
                     
                     source ~/kivy_venv/bin/activate
 
+Secondly, PyMySql will need to be installed
+
+         Pip Install pymysql 
+                  
   Additionally, Garden may or may not need to be installed. Garden also may or may not need to be upgraded--this depends on     the computer used.
 
 Running DRCA:
