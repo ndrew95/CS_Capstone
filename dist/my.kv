@@ -1,0 +1,325 @@
+#:import Clock kivy.clock.Clock
+WindowManager:
+    MainWindow:
+    CreateWindow:
+    SecondWindow:
+    MapWindow:
+
+<MainWindow>:
+    name: "main"
+    canvas.before:
+        Rectangle:
+            pos: (self.pos)
+            size: self.size
+            source: 'drake.jpg'
+
+    BoxLayout
+        id: login_layout
+        orientation: 'vertical'
+        padding: [10,50,10,50]
+        spacing: 50
+
+        Label:
+
+        BoxLayout:
+            orientation: 'vertical'
+
+            Label:
+                text: 'Login'
+                font_size: 35
+                halign: 'left'
+
+            TextInput:
+                id: login
+                multiline:False
+                font_size: 28
+
+        BoxLayout:
+            orientation: 'vertical'
+
+            Label:
+                text: 'Password'
+                halign: 'left'
+                font_size: 35
+
+            TextInput:
+                id: password
+                multiline:False
+                password:True
+                font_size: 28
+
+        Button:
+            text: 'Connect'
+            on_press: root.do_login(login.text, password.text)
+
+        BoxLayout:
+            orientation: 'vertical'
+
+            Label:
+                halign: 'left'
+                font_size: 18
+                text_size: root.width-40, 10
+
+            Button:
+                size_hint: 0.15, 0.15
+                pos: root.width-self.width, root.height / 2 - self.height / 2
+                text: "Sign Up"
+                on_release:
+                    app.root.current = 'create'
+                    root.manager.transition.direction = "left"
+    
+
+<CreateWindow>:
+    name: "create"
+    canvas.before:
+        Rectangle:
+            pos: (self.pos)
+            size: self.size
+            source: 'drake.jpg'
+
+    BoxLayout
+        id: create_acct
+        orientation: 'vertical'
+        padding: [10,50,10,50]
+        spacing: 50
+
+        Label:
+            text: 'Enter Details'
+            font_size: 32
+
+        BoxLayout:
+            orientation: 'vertical'
+
+            Label:
+                text: 'Login'
+                font_size: 35
+                halign: 'left'
+
+            TextInput:
+                id: login
+                multiline:False
+                font_size: 28
+
+        BoxLayout:
+            orientation: 'vertical'
+
+            Label:
+                text: 'Password'
+                halign: 'left'
+                font_size: 35
+
+            TextInput:
+                id: password
+                multiline:False
+                password:True
+                font_size: 28
+
+        Button:
+            text: 'Create Account'
+            on_press: root.create_account(login.text, password.text)
+            on_release: app.root.current = 'main'
+
+        BoxLayout:
+            orientation: 'vertical'
+
+            Label:
+                halign: 'left'
+                font_size: 18
+                text_size: root.width-40, 10
+
+            Button:
+                size_hint: 0.15, 0.15
+                pos: root.width-self.width, root.height / 2 - self.height / 2
+                text: "Login"
+                on_release:
+                    app.root.current = 'main'
+                    root.manager.transition.direction = "left"
+
+
+<SecondWindow>:
+    name: "second"
+
+    padding: [0,0,0,0]
+    spacing: 0
+    on_enter: Clock.schedule_once(root.update_events, .5) 
+    on_enter: Clock.schedule_once(root.update_results, .5) 
+    on_enter: Clock.schedule_once(root.update_interest, .5) 
+
+    TabbedPanel:
+        tab_pos: "top_mid"
+        id: tp
+        do_default_tab: True
+        default_tab: home_tab
+        
+        TabbedPanelItem:
+            text: 'Results'
+            BoxLayout:
+                canvas.before:
+                    Rectangle:
+                        pos: (self.pos)
+                        size: self.size
+                        source: 'drake.jpg'
+
+                orientation: 'vertical'
+
+                Label:
+                    text: "Recent Results"
+                    font_size: 60
+                Label:
+                    id: result1
+                Label:
+                    id: result2
+                Label:
+                    id: result3
+            
+                
+        TabbedPanelItem:
+            text: 'Events'
+            id: home_tab
+            
+            BoxLayout:
+                canvas.before:
+                    Rectangle:
+                        pos: (self.pos)
+                        size: self.size
+                        source: 'drake.jpg'
+
+                id: "1"
+                orientation: 'horizontal'
+                
+                BoxLayout:
+                    id: two
+                    
+                   
+                    orientation: 'vertical'
+                    spacing: 200
+
+                    Label:
+                        text: "Interest"
+                        font_size: 60
+                    CheckBox:
+                        id: check1
+                        text: 'CheckBox'
+
+                    CheckBox: 
+                        id: check2
+                        text: 'CheckBox'
+
+                    CheckBox: 
+                        id: check3
+                        text: 'CheckBox'
+
+                BoxLayout:
+                    id: "3"
+                    halign: 'center'
+                    orientation: 'vertical'
+                    spacing: 200
+                    id: events
+
+                    Label:
+                        text: "Event"
+                        font_size: 60
+                    Label:
+                        text: ""
+                        id: event1
+                        halign: 'left'
+                        valign: 'center'
+
+                    Label:
+                        text: "LOADING..."
+                        id: event2
+                        halign: 'left'
+                        valign: 'center'
+                        
+                    Label:
+                        text: ""
+                        id: event3
+                        halign: 'left'
+                        valign: 'center'
+
+                BoxLayout:
+                    orientation: "vertical"
+                    spacing: 200
+
+                    Label:
+                        text: "Time"
+                        font_size: 60
+
+                    Label:
+                        id: time1
+                    Label:
+                        id: time2
+                    Label:
+                        id: time3
+                
+                BoxLayout:
+                    id: "4"
+                    valign: 'bottom'
+                    
+                    Button:
+                        id: submit
+                        size_hint: 0.15, 0.15
+                        pos: root.width-self.width, root.height / 2 - self.height / 2
+                        text: "Submit Interest"
+                        halign: 'left'
+                        valign: 'bottom'
+                        on_release: root.reset_checkbox()
+                    
+
+        TabbedPanelItem:
+            text: "Interest"
+
+            BoxLayout:
+                id: "3"
+                canvas.before:
+                    Rectangle:
+                        pos: (self.pos)
+                        size: self.size
+                        source: 'drake.jpg'
+
+                orientation: 'vertical'
+                
+                id: events
+
+                Label:
+                    text: "Events With High Interest"
+                    font_size: 60
+
+                Label:
+                    text: ""
+                    id: interest1
+                    halign: 'left'
+                    valign: 'center'
+
+                Label:
+                    text: ""
+                    id: interest2
+                    halign: 'left'
+                    valign: 'center'
+
+                Label:
+                    text: ""
+                    id: interest3
+                    halign: 'left'
+                    valign: 'center'
+
+        TabbedPanelItem:
+            text: "Map"
+            on_press: app.root.current = 'map'
+        
+<MapWindow>:
+    name: 'map'
+    
+    BoxLayout: 
+        Button:
+            size_hint: 0.15, 0.15
+            pos: root.width-self.width, root.height / 2 - self.height / 2
+            text: 'Back'
+            on_press: app.root.current = 'second'
+
+        MapView:
+            id: map
+            id: mapview
+            lat: 41.605
+            lon: -93.655
+            zoom: 17
