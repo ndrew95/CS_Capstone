@@ -67,4 +67,6 @@ Running DRCA:
   
 
 
+Change Log: 09/14/2020
+The database has since been taken offline. This program no longer works. Snapshots of the database have been saved, if anyone needs the database tables and data, contact ndrew95.
                   
